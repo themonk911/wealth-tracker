@@ -1,0 +1,117 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h1, h2 {
+    color: #2c3e50;
+}
+
+.chart-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 50%;  /* Adjust this value to make the chart smaller or larger */
+    margin: 0 auto;  /* This centers the chart container */
+}
+
+.summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.summary-item h3 {
+    margin-top: 0;
+    color: #3498db;
+}
+
+.summary-item p {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.positive {
+    color: #2ecc71;
+}
+
+.negative {
+    color: #e74c3c;
+}
+
+nav {
+    background-color: #3498db;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+nav a:hover {
+    background-color: #2980b9;
+}
+
+.details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.assets, .debts {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 48%;
+}
+
+.assets h2, .debts h2 {
+    margin-top: 0;
+    color: #3498db;
+}
+
+.assets ul, .debts ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.assets li, .debts li {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.assets canvas, .debts canvas {
+    margin-top: 10px;
+}
+
+.line-chart-container {
+    width: 100%;
+    height: 500px;  /* Adjust this value to change the height of the line chart */
+    margin: 0 auto;
+}
+
+.pie-chart-container {
+    width: 50%;  /* Adjust this value to change the width of the pie chart */
+    height: 600px;  /* Adjust this value to change the height of the pie chart */
+    margin: 0 auto;
+}
