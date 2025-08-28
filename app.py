@@ -7,6 +7,9 @@ from collections import defaultdict
 from datetime import datetime
 from flask_caching import Cache
 from werkzeug.middleware.proxy_fix import ProxyFix
+import httplib2
+import certifi
+from google_auth_httplib2 import AuthorizedHttp
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
@@ -27,7 +30,12 @@ DATA_RANGE = 'Net Worth Data!A2:E'  # A:Date, B:Type, C:Value, D:Currency, E:Val
 TYPES_RANGE = 'Types!A2:B'
 
 credentials = Credentials.from_service_account_file('wealthmanager-credentials.json', scopes=SCOPES)
-service = build('sheets', 'v4', credentials=credentials)
+
+# Configure HTTP client with explicit CA bundle to avoid local TLS issues
+_ca_bundle_path = os.environ.get('SSL_CERT_FILE') or os.environ.get('REQUESTS_CA_BUNDLE') or certifi.where()
+_base_http = httplib2.Http(ca_certs=_ca_bundle_path, timeout=30)
+_authed_http = AuthorizedHttp(credentials, http=_base_http)
+service = build('sheets', 'v4', http=_authed_http, cache_discovery=False)
 
 @cache.memoize(timeout=3600)  # Cache for 1 hour
 def get_sheet_data(range_name):
@@ -35,8 +43,8 @@ def get_sheet_data(range_name):
         sheet = service.spreadsheets()
         result = sheet.values().get(spreadsheetId=SHEET_ID, range=range_name).execute()
         return result.get('values', [])
-    except HttpError as error:
-        print(f"An error occurred: {error}")
+    except Exception as error:
+        print(f"An error occurred while fetching sheet data: {error}")
         return []
 
 def parse_date(date_str):
