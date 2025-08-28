@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request
+import os
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -9,6 +10,13 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+# Optional local base path mounting (set BASE_PATH=/wealth to test locally under /wealth)
+BASE_PATH = os.environ.get('BASE_PATH', '').rstrip('/')
+if BASE_PATH:
+    from werkzeug.middleware.dispatcher import DispatcherMiddleware
+    app.config['APPLICATION_ROOT'] = BASE_PATH
+    app.wsgi_app = DispatcherMiddleware(Flask('root_app'), {BASE_PATH: app.wsgi_app})
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 app.static_folder = 'static'
 
@@ -131,11 +139,18 @@ def dashboard():
     total_debts = sum(debts.values())
     net_worth = total_assets - total_debts
     
+    # Build color palettes: greens for assets, reds for debts
+    green_palette = ['#e6f4ea', '#c9eecd', '#a8e6b5', '#85db9e', '#5cc786', '#35b26f', '#1e9e5a', '#178a4b']
+    red_palette = ['#fde7e9', '#fccdd2', '#f9aab3', '#f48796', '#ec6279', '#dd3d5e', '#c41f46', '#a50e34']
+
+    asset_colors = [green_palette[i % len(green_palette)] for i in range(len(assets))]
+    debt_colors = [red_palette[i % len(red_palette)] for i in range(len(debts))]
+
     pie_data = {
         'labels': list(assets.keys()) + list(debts.keys()),
         'datasets': [{
             'data': list(assets.values()) + [-v for v in debts.values()],
-            'backgroundColor': ['#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'] * 2
+            'backgroundColor': asset_colors + debt_colors
         }]
     }
     
