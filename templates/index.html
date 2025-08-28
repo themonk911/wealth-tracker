@@ -9,14 +9,30 @@
 </head>
 <body>
     <nav>
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <button id="refreshBtn" title="Refresh data" aria-label="Refresh data">⟳</button>
     </nav>
     <h1>Net Worth Tracker</h1>
     <div class="line-chart-container">
         <canvas id="netWorthChart"></canvas>
     </div>
     <script>
+        document.getElementById('refreshBtn').addEventListener('click', async function() {
+            this.disabled = true;
+            try {
+                const res = await fetch('{{ url_for('refresh_cache') }}', { method: 'POST' });
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to refresh cache');
+                }
+            } catch (e) {
+                alert('Error refreshing cache');
+            } finally {
+                this.disabled = false;
+            }
+        });
         var ctx = document.getElementById('netWorthChart').getContext('2d');
         var chart = new Chart(ctx, {
             type: 'line',

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -104,6 +104,15 @@ def process_sheet_data():
         chart_data['net_worth'].append(assets - debts)
 
     return chart_data, latest_data, type_categories
+
+@app.route('/refresh-cache', methods=['POST'])
+def refresh_cache():
+    # Clear memoized cache for get_sheet_data and any other cached functions
+    try:
+        cache.clear()
+        return jsonify({"status": "ok"})
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
 
 @app.route('/')
 def index():

@@ -187,6 +187,14 @@ class TestWealthTrackerApp(unittest.TestCase):
             # Verify the response is successful
             self.assertEqual(response.status_code, 200)
 
+    def test_refresh_route(self):
+        """Test the refresh cache route returns ok and clears cache"""
+        with app.test_client() as client:
+            resp = client.post('/refresh-cache')
+            self.assertEqual(resp.status_code, 200)
+            data = json.loads(resp.data)
+            self.assertEqual(data.get('status'), 'ok')
+
     def test_decreasing_values(self):
         """Test that decreasing values are correctly reflected in the chart data"""
         with patch('app.get_sheet_data') as mock_get_sheet_data:
